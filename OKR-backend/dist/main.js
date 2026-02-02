@@ -14,6 +14,7 @@ const createOkrRouteHandler_1 = require("./createOkrRouteHandler");
 const app = (0, express_1.default)();
 const port = 3000;
 app.use((0, cors_1.default)());
+app.use(express_1.default.json());
 const healthService = new healthService_1.HealthService();
 const healthController = new healthController_1.HealthController(healthService);
 app.use("/health", (0, createHealthRouteHandler_1.createHealthRouteHandler)(healthController));
