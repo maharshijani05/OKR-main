@@ -11,7 +11,6 @@ export class ObjectiveController {
     getAllObjectives() {
       return this.objectiveService.getAllObjectives();
     }
-
     @Post()
     createObjective(@Body() objectiveDto: ObjectiveDto) {
       return this.objectiveService.createObjective(objectiveDto);
