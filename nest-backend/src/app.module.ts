@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {ObjectiveModule} from "./objectives/objective.module";
-import { KeyResultsModule } from './key-results/key-results.module';
+import { KeyResultsModule } from './objectives/key-results/key-results.module';
 import {ConfigModule} from "@nestjs/config";
+import {AuthMiddleware} from "./middleware/auth.middleware";
 
 
 @Module({
@@ -11,4 +12,8 @@ import {ConfigModule} from "@nestjs/config";
     }),]
 
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+      consumer.apply(AuthMiddleware).forRoutes('objectives');
+    }
+}

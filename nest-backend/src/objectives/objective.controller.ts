@@ -1,7 +1,21 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    UseFilters,
+    ValidationPipe
+} from '@nestjs/common';
 import {ObjectiveService} from "./objective.service";
 import {ObjectiveDto} from "./dto/objective.dto";
+import {NormalizeStringPipe} from "../normalize-string-pipe/normalize-string.pipe.service";
+import {ObjectiveNotFoundFilter} from "./exception-filter/not-found.filter";
 
+@UseFilters(ObjectiveNotFoundFilter)
 @Controller('objectives')
 export class ObjectiveController {
     constructor(private readonly objectiveService: ObjectiveService ) {
@@ -11,13 +25,19 @@ export class ObjectiveController {
     getAll() {
       return this.objectiveService.getAll();
     }
-    @Post()
-    create(@Body() objectiveDto: ObjectiveDto) {
-      return this.objectiveService.create(objectiveDto);
+
+    @Get(':objectiveId')
+    getById(@Param('objectiveId', ParseIntPipe) id: number){
+        return this.objectiveService.getById(id);
     }
-    @Delete()
-    delete(@Body('id') id: number) {
-      return this.objectiveService.delete(id);
+
+    @Post()
+    create(@Body('title',new NormalizeStringPipe()) title:string) {
+      return this.objectiveService.create(title);
+    }
+    @Delete(':objectiveId')
+    delete(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
+      return this.objectiveService.delete(objectiveId);
     }
     @Patch(':id')
     update(@Param('id', ParseIntPipe) id: number, @Body() objectiveDto: Partial<ObjectiveDto>) {

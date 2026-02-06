@@ -25,14 +25,14 @@ const KeyResultProvider = ({ children }: ChildrenPropsType) => {
   const [keyResultList, setKeyResultList] = useState<KeyResultType[]>([]);
 
   const validateKeyResult = (keyResult: KeyResultType) => {
-    const measure: number = Number(keyResult.measure);
-    if (!(keyResult.description.length >= 5 && !Number.isNaN(measure))) {
+    const progress: number = Number(keyResult.progress);
+    if (!(keyResult.description.length >= 5 && !Number.isNaN(progress))) {
       throw new Error(
-        'Error:: Provide keyResult description greater than 5 characters and measure should be number'
+        'Error:: Provide keyResult description greater than 5 characters and progress should be number'
       );
     }
 
-    if (measure < 0 || measure > 100) {
+    if (progress < 0 || progress > 100) {
       throw new Error('keyResult must be in range (0-100)');
     }
   };

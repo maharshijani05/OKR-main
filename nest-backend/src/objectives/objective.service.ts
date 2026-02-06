@@ -1,34 +1,68 @@
-import  { Injectable} from '@nestjs/common';
-import { ObjectiveDto } from './dto/objective.dto';
-import { ObjectiveType } from './interfaces/objective.interface';
+import {Injectable} from '@nestjs/common';
+import {ObjectiveDto} from './dto/objective.dto';
+import {ObjectiveType} from './interfaces/objective.interface';
 import {PrismaService} from "../prisma.service";
+import {ObjectiveNotFoundError} from "./errors/objectiveNotFoundError";
 
 @Injectable()
-export class ObjectiveService{
-    objectives :ObjectiveType[] = [];
-    constructor ( private readonly prismaService: PrismaService) {
+export class ObjectiveService {
+    objectives: ObjectiveType[] = [];
+
+    constructor(private readonly prismaService: PrismaService) {
     }
 
     getAll() {
-        return this.prismaService.objective.findMany();
+        return this.prismaService.objective.findMany({include: {keyResults: true}});
     }
-    create(objectiveDto: ObjectiveDto) {
+
+    async getById(objectiveId: number) {
+        const objective = await this.prismaService.objective.findUnique({
+                where: {id: objectiveId},
+                include: {keyResults: true}
+            }
+        )
+        if (!objective) {
+            throw new ObjectiveNotFoundError(objectiveId);
+        }
+        return objective;
+    }
+
+    create(title: string) {
+        console.log(title);
         return this.prismaService.objective.create({
-            data:{
-                title:objectiveDto.title,
+            data: {
+                title: title,
             }
         });
     }
-    delete(id:number) {
+
+    async delete(id: number) {
+        const objective = await this.prismaService.objective.findUnique(
+            {
+                where: {id}
+            }
+        )
+        if (!objective) {
+            throw new ObjectiveNotFoundError(id)
+        }
         return this.prismaService.objective.delete({
-            where:{ id }
+            where: {id}
         })
     }
 
-    update(id: number, objectiveDto: Partial<ObjectiveDto>) {
+    async update(id: number, objectiveDto: Partial<ObjectiveDto>) {
+        const objective = await this.prismaService.objective.findUnique(
+            {
+                where: {id}
+            }
+        )
+        if (!objective) {
+            throw new ObjectiveNotFoundError(id)
+        }
         return this.prismaService.objective.update({
-            where: { id },
+            where: {id},
             data: objectiveDto
         });
     }
+
 }
